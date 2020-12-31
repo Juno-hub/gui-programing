@@ -35,7 +35,7 @@ menu.add_cascade(label="Language", menu=menu_lang)
 # View menu
 menu_view = Menu(menu, tearoff=0)
 menu_view.add_checkbutton(label="Show Minimap")
-menu_view.add_cascade(label="View", menu=menu_view)
+menu.add_cascade(label="View", menu=menu_view)
 
 root.config(menu=menu)
 root.mainloop()
