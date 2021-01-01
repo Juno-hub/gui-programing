@@ -1,0 +1,20 @@
+Project) Make a program that combines a lot of images.
+
+[User Sceanario]
+1. User selects 1 or more images that will be combined.
+2. User assignes a combined image of path.
+3. User designates width, verical interval, format options.
+4. When user click a Start button, the selected images is combined.
+5. When user click a Exit button, the program is finish.
+
+[Function]
+1. Add a file : Add a file in a list box.
+2. Delete : It is delete the selected file in the list box.
+3. Find : When user selectes a save folder, Insert the folder of path to text widget.
+4. Width : Specify width (original, 1024, 800, 640)
+5. Interval : Designate interval between images. (None, Small, normal, Large)
+6. Format : Assign the image format (PNG, JPG, BMP)
+7. Start : Combine images.
+8. Progress : Show the progress bar (파일 순서에 맞게 반영)
+9. Exit : Exit the program. 
+
