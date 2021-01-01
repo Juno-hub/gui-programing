@@ -1,10 +1,35 @@
+import os
 import tkinter.ttk as ttk
 import tkinter.messagebox as msgbox
 from tkinter import *
 from tkinter import filedialog
+from PIL import Image
 
 root = Tk()
 root.title("Juno GUI")
+
+
+# Combine images
+def combine_image():
+    # print(list_file.get(0, END))  # get the file list
+    images = [Image.open(x) for x in list_file.get(0, END)]
+    # size -> size[0] : width, size[1]: height
+    widths = [x.size[0] for x in images]
+    heights = [x.size[1] for x in images]
+    # Get the max width, the total height
+    max_width, total_height = max(widths), sum(heights)
+
+    # Scketchbook
+    # Backgroud white
+    result_img = Image.new("RGB", (max_width, total_height), (255, 255, 255))
+    y_offset = 0  # y location
+    for img in images:
+        result_img.paste(img, (0, y_offset))
+        y_offset += img.size[1]
+
+    dest_path = os.path.join(txt_dest_path.get(), "juno_photo.jpg")
+    result_img.save(dest_path)
+    msgbox.showinfo("Information", "Complementation")
 
 
 # Add a file & Delete a file
@@ -12,7 +37,7 @@ def add_file():
     files = filedialog.askopenfilenames(
         title="Select the image file",
         filetypes=(("PNG file", "*.png"), ("All of file", "*.*")),
-        initialdir=r"C:\Users\82108\OneDrive\사진\Saved Pictures"
+        initialdir=r"C:\Users\82108\Documents\gui-programing"
     )  # Show the initial path user specifies.
     for file in files:
         list_file.insert(END, file)
@@ -47,6 +72,8 @@ def start():
     if len(txt_dest_path.get()) == 0:
         msgbox.showwarning("Warning", "Select the saved file")
         return
+
+    combine_image()
 
 
 # File frame (Add a file, Delete)
