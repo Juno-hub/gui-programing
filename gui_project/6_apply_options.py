@@ -11,34 +11,72 @@ root.title("Juno GUI")
 
 # Combine images
 def combine_image():
-    # print(list_file.get(0, END))  # get the file list
-    images = [Image.open(x) for x in list_file.get(0, END)]
-    # size -> size[0] : width, size[1]: height
-    # widths = [x.size[0] for x in images]
-    # heights = [x.size[1] for x in images]
-    widths, heights = zip(*(x.size for x in images))
+    try:
+        # Width
+        img_width = cmb_width.get()
+        if img_width == "Original":
+            img_width = -1
+        else:
+            img_width = int(img_width)
 
-    # Get the max width, the total height
-    max_width, total_height = max(widths), sum(heights)
+        # Interval
+        img_interval = cmb_interval.get()
+        if img_interval == "small":
+            img_interval = 30
+        elif img_interval == "normal":
+            img_interval = 60
+        elif img_interval == "large":
+            img_interval = 90
+        else:
+            img_interval = 0
 
-    # Scketchbook
-    # Backgroud white
-    result_img = Image.new("RGB", (max_width, total_height), (255, 255, 255))
-    y_offset = 0  # y location
-    # for img in images:
-    #     result_img.paste(img, (0, y_offset))
-    #     y_offset += img.size[1]
-    for idx, img in enumerate(images):
-        result_img.paste(img, (0, y_offset))
-        y_offset += img.size[1]
+        # Format
+        img_format = cmb_format.get().lower()
 
-        progress = (idx + 1) / len(images) * 100
-        p_var.set(progress)
-        progress_bar.update()
+        images = [Image.open(x) for x in list_file.get(0, END)]
 
-    dest_path = os.path.join(txt_dest_path.get(), "juno_photo.jpg")
-    result_img.save(dest_path)
-    msgbox.showinfo("Information", "Complementation")
+        # Image size list
+        image_sizes = []  # [(width1, height1), (width2, height2), ...]
+        if img_width > -1:  # change the width value
+            image_sizes = [(int(img_width),
+                            int(img_width * x.size[1] / x.size[0]))
+                           for x in images]
+        else:
+            # original size
+            image_sizes = [(x.size[0], x.size[1]) for x in images]
+
+        widths, heights = zip(*(image_sizes))
+
+        # Get the max width, the total height
+        max_width, total_height = max(widths), sum(heights)
+
+        # Scketchbook
+        # Backgroud white
+        if img_interval > 0:
+            total_height += (img_interval * (len(images) - 1))
+
+        result_img = Image.new("RGB", (max_width, total_height),
+                               (255, 255, 255))
+        y_offset = 0  # y location
+
+        for idx, img in enumerate(images):
+            if img_width > 1:
+                img = img.resize(image_sizes[idx])
+
+            result_img.paste(img, (0, y_offset))
+            y_offset += (img.size[1] + img_interval)
+
+            progress = (idx + 1) / len(images) * 100
+            p_var.set(progress)
+            progress_bar.update()
+
+        # Format option
+        file_name = "juno_photo." + img_format
+        dest_path = os.path.join(txt_dest_path.get(), file_name)
+        result_img.save(dest_path)
+        msgbox.showinfo("Information", "Complementation")
+    except Exception as err:
+        msgbox.showerror("Error", err)
 
 
 # Add a file & Delete a file
@@ -53,14 +91,13 @@ def add_file():
 
 
 def del_file():
-    # print(list_file.curselection())
     for index in reversed(list_file.curselection()):
         list_file.delete(index)
 
 
 def browse_dest_path():
     selected_folder = filedialog.askdirectory()
-    if selected_folder is None:  # if selected_folder == ": ??
+    if selected_folder == '':  # if selected_folder == ": ??
         return
     txt_dest_path.delete(0, END)
     txt_dest_path.insert(0, selected_folder)
@@ -68,9 +105,9 @@ def browse_dest_path():
 
 def start():
     # Option value
-    print("Width: ", cmb_width.get())
-    print("Interval: ", cmb_interval.get())
-    print("File format: ", cmb_format.get())
+    # print("Width: ", cmb_width.get())
+    # print("Interval: ", cmb_interval.get())
+    # print("File format: ", cmb_format.get())
 
     # File list
     if list_file.size() == 0:
