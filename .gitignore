@@ -1,2 +1,5 @@
 images/*
-screenshot/*
+스크린샷/*
+build/*
+dist/*
+dist.zip
